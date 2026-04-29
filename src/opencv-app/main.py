@@ -65,5 +65,39 @@ mask = np.any(image > threshold_value, axis = -1)
 #__Pixel_Highlight_Mask:
 highlighted_image = image.copy()
 highlighted_image[mask] = [255, 0, 0]
-cv2.imshow('Highlight Image', highlighted_image)
+# cv2.imshow('Highlight Image', highlighted_image)
+# cv2.waitKey(0)
+
+#-----IMAGE-GUI-APPLICATION-----
+
+def update_image(x):
+    alpha = cv2.getTrackbarPos('Contrast', 'App') / 50.0
+    beta = cv2.getTrackbarPos('Brightness', 'App') - 50
+    apply_sharpen = cv2.getTrackbarPos('Toggle Sharpening', 'App')
+    apply_mean = cv2.getTrackbarPos('Toggle Mean Color', 'App')
+    apply_highlights = cv2.getTrackbarPos('Toggle Highlighting', 'App')
+
+    output = cv2.convertScaleAbs(image, alpha = alpha, beta = beta)
+
+    if apply_sharpen:
+        output = cv2.filter2D(output, -1, sharpen_kernel)
+    if apply_mean:
+        mean_values = np.mean(output, axis = (0, 1))
+        output = np.ones_like(output) * mean_values.astype(np.uint8)
+    if apply_highlights:
+        mask = np.any(output > threshold_value, axis = -1)
+        output[mask] = [255, 0, 0]
+    
+    cv2.imshow('App', output)
+
+cv2.namedWindow('App')
+cv2.resizeWindow('App', 500, 400)
+cv2.createTrackbar('Brightness', 'App', 50, 100, update_image)
+cv2.createTrackbar('Contrast', 'App', 50, 100, update_image)
+cv2.createTrackbar('Toggle Sharpening', 'App', 0, 1, update_image)
+cv2.createTrackbar('Toggle Mean Color', 'App', 0, 1, update_image)
+cv2.createTrackbar('Toggle Highlighting', 'App', 0, 1, update_image)
+
+cv2.imshow('App', image)
 cv2.waitKey(0)
+cv2.destroyAllWindows()
