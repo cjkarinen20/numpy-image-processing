@@ -25,7 +25,7 @@ adjusted = cv2.convertScaleAbs(image, alpha = alpha, beta = beta)
 
 #-----CUSTOM-KERNELS-----
 
-#__Sharpening Filter__:
+#__Sharpening_Filter__:
 sharpen_kernel = np.array([[-1,-1,-1],
                            [-1, 9,-1],
                            [-1,-1,-1]])
@@ -35,7 +35,7 @@ sharpened = cv2.filter2D(image, -1, sharpen_kernel)
 # cv2.imshow('Sharpened Image', sharpened)
 # cv2.waitKey(0)
 
-#__Blur Filter__:
+#__Blur_Filter__:
 blur_kernel = np.array([[1,1,1],
                         [1,1,1],
                         [1,1,1]])/9
@@ -49,4 +49,21 @@ mean_values = np.mean(image, axis = (0, 1))
 print(f"Mean values for R, G, B: {mean_values}")
 
 mean_color_image = np.ones_like(image) * mean_values.astype(np.uint8)
-cv2.imshow('Mean Color Image', mean_color_image)
+# cv2.imshow('Mean Color Image', mean_color_image)
+# cv2.waitKey(0)
+
+#-----BOOLEAN-MASKING-----
+
+#__Pixel_Intensity_Mask__:
+threshold_value = 200
+
+mask = np.any(image > threshold_value, axis = -1)
+
+# cv2.imshow('Pixel Intensity Mask', mask.astype(np.uint8) * 255)
+# cv2.waitKey(0)
+
+#__Pixel_Highlight_Mask:
+highlighted_image = image.copy()
+highlighted_image[mask] = [255, 0, 0]
+cv2.imshow('Highlight Image', highlighted_image)
+cv2.waitKey(0)
